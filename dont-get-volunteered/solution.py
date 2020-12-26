@@ -1,8 +1,11 @@
+DEBUG = False
 squares_per_side = 8
 
 # move options are the (row, col) coordinate offsets for a possible move
 move_options = [(1, 2), (1, -2), (-1, 2), (-1, -2),
                 (2, 1), (2, -1), (-2, 1), (-2, -1)]
+
+# Helper Functions
 
 
 def square_to_coord(square):
@@ -42,20 +45,11 @@ def possible_paths(current_path, move_to_options):
     new_paths = []
     p = current_path
     for m in move_to_options:
-        new_path = p.copy()
+        new_path = list(p)
         new_path.append(m)
         new_paths.append(new_path)
 
     return (new_paths)
-
-# a path is a list of coordinates visited in sequence
-# next_path copies the current path and appends the next coordinate
-
-
-def next_path(current_path, next_coord):
-    new_path = current_path.copy()
-    new_path.append(next_coord)
-    return new_path
 
 # translate a path of coordinates to a path of square numbers
 # (useful for logging and readability)
@@ -81,15 +75,6 @@ def coord_paths_to_square_paths(coord_path_list):
 
     return (square_paths)
 
-# test if the coordinate has already been visited in the path
-
-
-def visited_filter(coord, visited_coords):
-    if coord in visited_coords:
-        return True
-    else:
-        return False
-
 # given a single path, generate a list of paths to explore
 # from the last node in the path
 
@@ -100,8 +85,10 @@ def generate_paths_to_explore(path):
     # filter out coordinates already visited in this path
     unvisited_coords = list(
         filter(lambda coord: coord not in path, possible_coords))
-    print(
-        f'unvisited_coords: {list(map(lambda coord: coord_to_square(coord), unvisited_coords))}')
+    if DEBUG:
+        unvisited_squares = list(
+            map(lambda coord: coord_to_square(coord), unvisited_coords))
+        print('unvisited_coords: %s' % unvisited_squares)
 
     # build list of new paths to explore
     new_paths = possible_paths(path, unvisited_coords)
@@ -117,20 +104,23 @@ def explore_paths(move_number, dest_coord, current_paths, solutions):
 
     next_paths = []
 
-    print(
-        f'move: {move_number} exploring paths: {coord_paths_to_square_paths(current_paths)}')
+    if DEBUG:
+        print(
+            'move: %s exploring paths: %s' % (move_number, {coord_paths_to_square_paths(current_paths)}))
 
     for p in current_paths:
 
-        print(f'evaluating path: {coord_path_to_square_path(p)}')
+        if DEBUG:
+            print('evaluating path: %s' % coord_path_to_square_path(p))
 
         # last element in path is the current coordinate
         current_coord = p[-1]
-        #print(f'evaluating square: {coord_to_square(current_coord)}')
 
         if current_coord == dest_coord:
             # add path as a solution
-            print(f'*** Found a solution!: {coord_path_to_square_path(p)}')
+            if DEBUG:
+                print(
+                    '*** Found a solution!: %s' % coord_path_to_square_path(p))
             solutions.append(p)
             return(move_number)
         else:
@@ -155,11 +145,12 @@ def explore_paths(move_number, dest_coord, current_paths, solutions):
 
 
 def solution(src, dest):
+    # MAIN LOGIC
     src_coord = square_to_coord(src)
     dest_coord = square_to_coord(dest)
-
-    print(f'src : {src} {src_coord}')
-    print(f'dest: {dest} {dest_coord}')
+    if DEBUG:
+        print('src : %s %s' % (src, src_coord))
+        print('dest: %s %s' % (dest, dest_coord))
 
     initial_paths = [[src_coord]]
     solutions = []
@@ -169,13 +160,14 @@ def solution(src, dest):
         move_number, dest_coord, initial_paths, solutions)
 
     final_solutions = coord_paths_to_square_paths(solutions)
-    print(f'square solutions: {final_solutions}')
+    if DEBUG:
+        print('square solutions: %s' % final_solutions)
 
-    path_lengths = list(map(lambda s: len(s), solutions))
-    print(f'path lengths: {path_lengths}')
+        path_lengths = list(map(lambda s: len(s), solutions))
+        print('path lengths: %s' % path_lengths)
 
     return (solution_steps)
 
 
-#print(f'solved in: {solution(19,36)} step(s)')
-#print(f'solved in: {solution(0,1)} step(s)')
+#print('solved in: %s step(s)' % solution(19, 36))
+#print('solved in: %s step(s)' % solution(0, 1))
