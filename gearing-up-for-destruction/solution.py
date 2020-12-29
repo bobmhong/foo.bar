@@ -14,11 +14,11 @@ def solution(pegs):
     r0max = pegs[1] - pegs[0]
 
     # vary the initial radius from MIN_RADIUS to max
-    for r in range(MIN_RADIUS, r0max):
+    for r in range(MIN_RADIUS * 3, r0max * 3):
         radii = []
         radii.append(r)
         if DEBUG:
-            print('radius %s: %s' % (0, radii[0]))
+            print('radius %s: %s/3' % (0, radii[0]))
         i = 1
         # interate from peg 1 to last peg
         while i < num_pegs and SOLVED == False:
@@ -30,37 +30,61 @@ def solution(pegs):
                 return ([-1, -1])
 
             # radius for gear on current peg fills space left by the last gear's radius
-            new_radius = peg_span - radii[lastidx]
-            if new_radius < MIN_RADIUS:
+            new_radius = peg_span * 3 - radii[lastidx]
+            if new_radius < MIN_RADIUS * 3:
                 if DEBUG:
-                    print('radius %s: %s less than minimum' % (i, new_radius))
+                    print('radius %s: %s/3 less than minimum radius' %
+                          (i, new_radius))
                 # Break out of peg iteration while loop - solution not possible with this initial radius
                 break
 
             radii.append(new_radius)
             if DEBUG:
-                print('radius %s: %s' % (i, radii[i]))
+                print('radius %s: %s/3' % (i, radii[i]))
             # Check for Valid Solution
             if i == num_pegs - 1:
                 if radii[0] == 2 * radii[num_pegs - 1]:
                     SOLVED = True
-                    return ([radii[0], 1])
+                    a = radii[0]
+                    b = 3
+                    if a % 3 == 0:
+                        a = a / 3
+                        b = 1
+                    return ([a, b])
                 else:
                     if DEBUG:
-                        print('initial radius %s is not a solution' % radii[0])
+                        print('initial radius %s/3 is not a solution' % radii[0])
             i = i + 1
     return([-1, -1])
 
 
-print(solution([4, 30, 50]))
+# pegs = [1, 3]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
 
-# Test case - span between peg 1 and 2 not large enough
-print(solution([3, 10, 12]))
+# pegs = [1, 4]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
 
-print(solution([4, 17, 50]))
+# pegs = [1, 5]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
 
-print(solution([4]))
+pegs = [1, 5, 7]
+print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
 
-print(solution([-1, 10, 20]))
+# pegs = [4, 30, 50]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
 
-print(solution([10, 20, 500000]))
+# # # Test case - span between peg 1 and 2 not large enough
+# pegs = [3, 10, 12]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
+
+# pegs = [4, 17, 50]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
+
+# pegs = [4]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
+
+# pegs = [-1, 10, 20]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
+
+# pegs = [10, 20, 500000]
+# print('Pegs: %s Solution: %s' % (pegs, solution(pegs)))
